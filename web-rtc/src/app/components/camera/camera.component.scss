@@ -1,0 +1,8 @@
+@import 'src/app/components/css/control-button';
+
+.camera {
+    @include control-button(
+        './icons/camera-on.svg',
+        './icons/camera-off.svg'
+    );
+}

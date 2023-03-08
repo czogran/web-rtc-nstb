@@ -1,0 +1,12 @@
+@import 'src/app/components/css/control-button';
+
+.drag-and-drop {
+    @include set-background-image('./icons/drag-and-drop.svg');
+    width: 100%;
+    height: 100%;
+    background-size: 50% 50%;
+    background-repeat: no-repeat;
+    background-position: center;
+    cursor: pointer;
+    border: none;
+}

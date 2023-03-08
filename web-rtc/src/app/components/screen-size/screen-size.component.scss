@@ -1,0 +1,19 @@
+@import 'src/app/components/css/control-button';
+
+.screen-size {
+    width: 100%;
+    height: 100%;
+    background-size: 50% 50%;
+    background-repeat: no-repeat;
+    background-position: center;
+    cursor: pointer;
+    border: none;
+
+    &--full-screen {
+        @include set-background-image('./icons/minimize.svg');
+    }
+
+    &--minimized {
+        @include set-background-image('./icons/full-screen.svg');
+    }
+}

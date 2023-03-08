@@ -1,0 +1,8 @@
+@import 'src/app/components/css/control-button';
+
+.microphone {
+    @include control-button(
+        './icons/microphone-unmuted.svg',
+        './icons/microphone-muted.svg'
+    );
+}

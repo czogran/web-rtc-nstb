@@ -1,0 +1,44 @@
+@mixin set-background-image($urlOn) {
+    background-image: url($urlOn);
+}
+
+@mixin control-button-base {
+    background-size: 50% 50%;
+    background-repeat: no-repeat;
+    background-position: center;
+    border-radius: 100%;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    border: 1px solid gray;
+
+}
+
+@mixin control-button($urlOn, $urlOff) {
+    @include control-button-base;
+
+    &--on {
+        background-image: url($urlOn);
+        &:hover {
+            background-color: rgb(76, 175, 80, 0.3);
+        }
+    }
+
+    &--off {
+        background-image: url($urlOff);
+        &:hover {
+            background-color: rgba(155, 50, 80);
+        }
+    }
+}
+
+@mixin hover-negative {
+    &:hover {
+        background-color: rgb(155, 50, 80);
+    }
+}
+@mixin hover-positive {
+    &:hover {
+        background-color: rgba(76, 175, 80, 0.3);
+    }
+}

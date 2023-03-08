@@ -1,0 +1,5 @@
+@import 'src/app/components/css/control-button';
+
+.telephone {
+    @include control-button('./icons/telephone-plus.svg', './icons/telephone-x.svg');
+}

@@ -1,0 +1,23 @@
+app-dashboard-header {
+    &.dashboard-header {
+        display: flex;
+        align-items: center;
+        border: 1px solid black;
+        border-radius: 10px;
+        background-color: rgb(200, 200, 200);
+    }
+
+    .icon-container {
+        width: 40px;
+        height: 40px;
+
+        &--camera-icon {
+            margin-left: auto;
+        }
+
+        &--telephone-icon {
+            margin-left: 10px;
+            margin-right: 20px;
+        }
+    }
+}

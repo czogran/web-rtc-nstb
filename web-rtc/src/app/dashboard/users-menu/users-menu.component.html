@@ -1,0 +1,21 @@
+<div style="border-bottom: 1px solid black">
+   <span> {{
+        userService.loggedUser!.nickname ||
+            userService!.loggedUser!.name + ' ' + userService!.loggedUser!.surname
+       }}</span>
+    <button (click)="logout()">LOGOUT</button>
+</div>
+<div
+    contenteditable="true"
+    class="message-input"
+    data-text="Search users"
+></div>
+<input />
+<ul>
+    <li
+        *ngFor="let chat of chatService.availableChatProfilesObservable | async"
+        (click)="selectPeer(chat)"
+    >
+        {{ chat | chatName }}
+    </li>
+</ul>

@@ -1,0 +1,33 @@
+:host(.login-page) {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    position: absolute;
+    justify-content: center;
+    align-items: center;
+    background: rgb(132, 140, 150);
+}
+
+.login-form-wrapper {
+    border: 1px solid black;
+    border-radius: 10px;
+    padding: 10px;
+    background: rgb(200, 200, 200);
+    width: 50%;
+    height: 50%;
+    max-height: 200px;
+    display: flex;
+    flex-direction: column;
+    font-size: 2em;
+    align-items: center;
+
+    &__header {
+        text-align: center;
+        margin: 20px;
+        height: calc(50% - 50px);
+    }
+
+    &__login{
+        text-align: end; width: 50%; min-width: 100px; height: 30px
+    }
+}

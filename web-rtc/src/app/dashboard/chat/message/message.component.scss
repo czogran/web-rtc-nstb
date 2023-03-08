@@ -1,0 +1,19 @@
+.own-message {
+    justify-content: flex-end;
+    > .own-message__element {
+        background-color: cornflowerblue;
+        margin: 5px 10px 5px 0;
+    }
+}
+
+.message-wrapper {
+    display: flex;
+    &__message {
+        overflow-wrap: break-word;
+        background: aliceblue;
+        border-radius: 10px;
+        padding: 10px;
+        margin: 5px 0 5px 10px;
+        max-width: 80%;
+    }
+}

@@ -1,0 +1,19 @@
+.chat {
+    //fill-opacity: 0.2;
+    height: 100%;
+    background-color: rgb(232, 232, 232);
+    background-image: url('../../../assets/nstb.png');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    overflow-y: auto;
+    border: 1px solid black;
+    border-radius: 10px;
+
+    .chat__messages-container {
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column-reverse;
+        height: inherit;
+    }
+}

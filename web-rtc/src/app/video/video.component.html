@@ -1,0 +1,56 @@
+<ng-template [ngIf]="isToastVisible | async">
+    <div
+        id="video"
+        style="
+            position: fixed;
+
+            width: 75vw;
+            height: 75vh;
+            z-index: 1;
+            border: 1px solid black;
+            border-radius: 10px;
+            overflow: hidden;
+
+            /*background: aqua;*/
+        "
+    >
+        <div style="position: relative">
+            <div
+                style="
+                    display: flex;
+                    position: absolute;
+
+                    z-index: 1;
+                "
+            >
+                <app-drag-and-drop
+                    id="dragAndDropIcon"
+                    style="width: 20px; height: 20px"
+                ></app-drag-and-drop>
+                <app-screen-size
+                    style="width: 20px; height: 20px"
+                    (isMinimizedChange)="minimizeToast($event)"
+                ></app-screen-size>
+            </div>
+        </div>
+        <app-video-tab
+            style="
+                position: absolute;
+                z-index: 11;
+                border-bottom: 1px solid black;
+                border-left: 1px solid black;
+                width: 20%;
+                height: 20%;
+                right: 0;
+            "
+            [displayControlIcons]="false"
+            [stream]="(mediaService.localStreamSubject | async)!"
+        ></app-video-tab>
+        <div style="height: 100%">
+            <app-video-tab
+                [stream]="(mediaService.localStreamSubject | async)!"
+                (endCall)="endCall()"
+            ></app-video-tab>
+        </div>
+    </div>
+</ng-template>

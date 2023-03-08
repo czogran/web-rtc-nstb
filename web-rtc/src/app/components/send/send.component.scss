@@ -1,0 +1,10 @@
+@import 'src/app/components/css/control-button';
+
+.send {
+    @include control-button-base;
+    @include set-background-image('./icons/send.svg');
+
+    :hover {
+        background-color: rgba(20, 40, 250, 0.6);
+    }
+}

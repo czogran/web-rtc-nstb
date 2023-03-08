@@ -1,0 +1,8 @@
+<button
+    class="screen-size"
+    (click)="onClick()"
+    [ngClass]="{
+        'screen-size--minimized': isMinimized,
+        'screen-size--full-screen': !isMinimized
+    }"
+></button>
