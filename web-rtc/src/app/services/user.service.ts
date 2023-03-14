@@ -15,7 +15,7 @@ export class UserService {
         return this.httpClient.post(apiUrl.userData, {}).pipe(
             map((response) => response as User),
             tap((response) => {
-                this.userIdn = response.userIdn
+                this.userIdn = response.idn
                 this.loggedUser = response
             })
         )
@@ -28,7 +28,7 @@ export class UserService {
 }
 
 export interface User {
-    userIdn: string
+    idn: string
     name?: string
     surname?: string
     nickname?: string

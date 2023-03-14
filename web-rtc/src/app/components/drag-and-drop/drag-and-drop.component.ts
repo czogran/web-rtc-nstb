@@ -8,11 +8,7 @@ import { CommonModule } from '@angular/common';
   templateUrl: './drag-and-drop.component.html',
   styleUrls: ['./drag-and-drop.component.scss']
 })
-export class DragAndDropComponent implements OnInit {
+export class DragAndDropComponent  {
 
-  constructor() { }
-
-  ngOnInit(): void {
-  }
 
 }

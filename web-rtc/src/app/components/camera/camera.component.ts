@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { Component, Input, OnInit } from '@angular/core'
+import { Component, Input } from '@angular/core'
 
 @Component({
     selector: 'app-camera',
@@ -8,11 +8,7 @@ import { Component, Input, OnInit } from '@angular/core'
     templateUrl: './camera.component.html',
     styleUrls: ['./camera.component.scss'],
 })
-export class CameraComponent implements OnInit {
+export class CameraComponent {
     @Input()
     active: boolean
-
-    constructor() {}
-
-    ngOnInit(): void {}
 }

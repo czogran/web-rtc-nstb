@@ -71,7 +71,7 @@ export class VideoComponent {
     ngOnInit(): void {
     }
 
-    minimizeToast(isMinimized: boolean) {
+    minimizeVideo(isMinimized: boolean) {
         const element = document.getElementById('video')!
         element.style.width = isMinimized ? '20vw' : '75vw'
         element.style.height = isMinimized ? '20vh' : '75vh'
