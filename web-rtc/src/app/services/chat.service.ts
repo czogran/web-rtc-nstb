@@ -12,7 +12,7 @@ import {
 } from 'rxjs'
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket'
 import { apiUrl } from '../../environments/url'
-import {User} from "./user.service";
+import { User, UserService } from './user.service'
 
 @Injectable({
     providedIn: 'root',
@@ -39,19 +39,21 @@ export class ChatService implements OnDestroy {
     constructor(
         private httpClient: HttpClient,
         private router: Router,
-        private activatedRoute: ActivatedRoute
+        private activatedRoute: ActivatedRoute,
+        private userService: UserService
     ) {
-        this.activatedRoute.queryParams.subscribe((params) => {
-            this.selectedChatIdn = params['chatIdn']
-            console.log(this.selectedChatIdn)
-            // this.selectedChatSubject.next(this.selectedChat)
-        })
+        this.activatedRoute.queryParams.subscribe(
+            (params) => (this.selectedChatIdn = params['chatIdn'])
+        )
 
         this.ws = webSocket({
             url: apiUrl.chat,
             deserializer: (msg) => msg,
             binaryType: 'arraybuffer',
         })
+
+        this.ws.next({ type: 'CONNECT', userIdn: this.userService.userIdn })
+
         this.wsSubscription = this.ws
             .pipe(
                 tap((response) => {
@@ -71,13 +73,12 @@ export class ChatService implements OnDestroy {
     }
 
     sendChatMessage(message: ChatMessage) {
-        this.messagesSubject.next(message)
         this.ws.next(message)
     }
 
     getUserChats() {
         return this.httpClient
-            .post(apiUrl.userChats, {})
+            .post(apiUrl.userChats, { userIdn: this.userService.userIdn })
             .pipe(
                 map(
                     (respnose) =>
@@ -130,10 +131,8 @@ export interface ChatProfile {
     users?: User[]
 }
 
-
-
 export interface ChatMessage {
     authorIdn?: string
-    recipentIdn?: string
+    chatIdn?: string
     body: any
 }

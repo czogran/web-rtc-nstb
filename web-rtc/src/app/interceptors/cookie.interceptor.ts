@@ -5,16 +5,12 @@ import {
     HttpRequest,
 } from '@angular/common/http'
 import { Injectable } from '@angular/core'
-import { CookieService } from 'ngx-cookie-service'
 import { Observable } from 'rxjs'
 import { LoginService } from '../services/login.service'
 
 @Injectable()
 export class CookieInterceptor implements HttpInterceptor {
-    constructor(
-        private cookieService: CookieService,
-        private loginService: LoginService
-    ) {}
+    constructor(private loginService: LoginService) {}
 
     intercept(
         request: HttpRequest<unknown>,

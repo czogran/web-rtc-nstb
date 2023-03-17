@@ -71,11 +71,8 @@
               "browserTarget": "web-rtc:build:development"
             }
           },
-          "defaultConfiguration": "development",
-          "options": {
-            "host": "nstb.com",
-            "port": 4200
-          }
+          "defaultConfiguration": "development"
+
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",

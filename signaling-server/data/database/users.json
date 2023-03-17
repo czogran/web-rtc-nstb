@@ -3,18 +3,42 @@
     "name": "pp",
     "surname": "qq",
     "nickname": "ee",
-    "idn": "dae52cf9-f25a-4ed9-9111-f5e87c47f1bc"
+    "idn": "dae52cf9-f25a-4ed9-9111-f5e87c47f1bc",
+    "chats": ["1"]
   },
   "2c1c0062-2e01-47cc-b555-39a10b32b132": {
     "name": "ppq",
     "surname": "qqq",
     "nickname": "eeq",
-    "idn": "2c1c0062-2e01-47cc-b555-39a10b32b132"
+    "idn": "2c1c0062-2e01-47cc-b555-39a10b32b132",
+    "chats": ["1"]
   },
   "7ba0b538-1907-4b44-b859-6dd7753588c3": {
     "name": "testowy",
     "surname": "Jan",
     "nickname": "Nowak",
-    "idn": "7ba0b538-1907-4b44-b859-6dd7753588c3"
+    "idn": "7ba0b538-1907-4b44-b859-6dd7753588c3",
+    "chats": []
+  },
+  "03040fc9-1ff4-468f-b605-43452055b8e4": {
+    "name": "Jan",
+    "surname": "Kowalski",
+    "nickname": "",
+    "idn": "03040fc9-1ff4-468f-b605-43452055b8e4",
+    "chats": []
+  },
+  "be2a91ae-a000-4bd4-b938-d3cff385d6b0": {
+    "name": "Micha\u0142",
+    "surname": "Nowak",
+    "nickname": "",
+    "idn": "be2a91ae-a000-4bd4-b938-d3cff385d6b0",
+    "chats": []
+  },
+  "0d7a6db9-5d18-41aa-aede-38dca34a3652": {
+    "name": "Zenon",
+    "surname": "Marty",
+    "nickname": "MartyMax",
+    "idn": "0d7a6db9-5d18-41aa-aede-38dca34a3652",
+    "chats": []
   }
 }

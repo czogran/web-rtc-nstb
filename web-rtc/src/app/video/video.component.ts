@@ -1,26 +1,26 @@
-import {CommonModule} from '@angular/common'
+import { CommonModule } from '@angular/common'
 import {
-    ChangeDetectionStrategy,
+    ChangeDetectorRef,
     Component,
     NgZone,
-    TemplateRef,
+    OnDestroy,
+    OnInit,
 } from '@angular/core'
-import {Subject, tap} from 'rxjs'
-import {CameraComponent} from '../components/camera/camera.component'
-import {DragAndDropComponent} from '../components/drag-and-drop/drag-and-drop.component'
-import {MicrophoneComponent} from '../components/microphone/microphone.component'
-import {ScreenSizeComponent} from '../components/screen-size/screen-size.component'
-import {TelephoneComponent} from '../components/telephone/telephone.component'
-import {MediaService} from '../services/media.service'
-import {SignalingService} from '../services/signaling.service'
-import {VideoTabComponent} from './video-tab/video-tab.component'
-import {VideoService} from './video.service'
+import { Subject, Subscription, tap } from 'rxjs'
+import { CameraComponent } from '../components/camera/camera.component'
+import { DragAndDropComponent } from '../components/drag-and-drop/drag-and-drop.component'
+import { MicrophoneComponent } from '../components/microphone/microphone.component'
+import { ScreenSizeComponent } from '../components/screen-size/screen-size.component'
+import { TelephoneComponent } from '../components/telephone/telephone.component'
+import { MediaService } from '../services/media.service'
+import { SignalingService } from '../services/signaling.service'
+import { VideoTabComponent } from './video-tab/video-tab.component'
+import { VideoService } from './video.service'
 
 @Component({
     selector: 'app-video',
     templateUrl: './video.component.html',
     styleUrls: ['./video.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
         CommonModule,
         TelephoneComponent,
@@ -32,43 +32,56 @@ import {VideoService} from './video.service'
     ],
     standalone: true,
 })
-export class VideoComponent {
-    isToastVisible: Subject<boolean> = new Subject()
-    template: TemplateRef<any>
+export class VideoComponent implements OnInit, OnDestroy {
+    isVideoTabVisible: Subject<boolean> = new Subject()
 
-    toastTemplate: Subject<TemplateRef<any>> = new Subject<TemplateRef<any>>()
-    private isMinimized: boolean = false
+    videoStateSubscription: Subscription = new Subscription()
 
     constructor(
+        private changeDetectorRef: ChangeDetectorRef,
         public videoService: VideoService,
         private zone: NgZone,
         private signalingService: SignalingService,
         public mediaService: MediaService
-    ) {
-        this.videoService.videoState
+    ) {}
+
+    ngOnInit() {
+        this.mediaService.localStreamSubject.subscribe((stream) => {
+            setTimeout(() => {
+                this.changeDetectorRef.detectChanges()
+            })
+        })
+        this.videoStateSubscription = this.videoService.videoStateObservable
             .pipe(
-                tap((body) => {
-                    console.log('aaaaaaaaaaaaaaa')
-                    this.signalingService.createCall().then()
-                    this.isToastVisible.next(true)
+                tap(() => {
+                    this.zone.run(() => {
+                        this.isVideoTabVisible.next(true)
+                    })
+
                     setTimeout(() => {
                         this.zone.runOutsideAngular(() => {
-                            // const element = document.getElementById('video')!
-                            // element.style.top = '15vw'
-                            // element.style.left = '15vw'
-
                             dragElement(
                                 document.getElementById('video') as HTMLElement,
                                 this.zone
                             )
                         })
                     })
+                }),
+                tap((reason) => {
+                    if (reason === 'VIDEO') {
+                        this.signalingService.createCall().then()
+                    } else if (reason === 'AUDIO') {
+                        this.signalingService.createCall( false).then()
+                    }
                 })
             )
             .subscribe()
     }
 
-    ngOnInit(): void {
+    endCall() {
+        this.mediaService.closeStream()
+        this.signalingService.endConnection()
+        this.isVideoTabVisible.next(false)
     }
 
     minimizeVideo(isMinimized: boolean) {
@@ -77,10 +90,8 @@ export class VideoComponent {
         element.style.height = isMinimized ? '20vh' : '75vh'
     }
 
-    endCall() {
-        this.mediaService.closeStream()
-        this.signalingService.endConnection()
-        this.isToastVisible.next(false)
+    ngOnDestroy(): void {
+        this.videoStateSubscription.unsubscribe()
     }
 }
 

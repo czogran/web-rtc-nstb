@@ -4,6 +4,7 @@
         #input
         placeholder="Login"
         class="login-form-wrapper__login"
+        [ngClass]="{'login-form-wrapper__login--error': wrongLogin | async}"
         type="text"
         (keyup.enter)="submitInput()"
     />

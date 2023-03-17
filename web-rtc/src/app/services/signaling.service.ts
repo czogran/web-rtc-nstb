@@ -2,6 +2,7 @@ import { Injectable, NgZone } from '@angular/core'
 import { map, Observable } from 'rxjs'
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket'
 import { apiUrl } from '../../environments/url'
+import { VideoService } from '../video/video.service'
 import { MediaService } from './media.service'
 
 @Injectable()
@@ -17,18 +18,26 @@ export class SignalingService {
             },
         ],
     }
+
     private ws: WebSocketSubject<any>
+
     private peerConnection: RTCPeerConnection
 
     private offer: RTCSessionDescriptionInit
+
     private answer: RTCSessionDescriptionInit
 
-    constructor(private zone: NgZone, private mediaService: MediaService) {
+    constructor(
+        private zone: NgZone,
+        private mediaService: MediaService,
+        private videoService: VideoService
+    ) {
         this.createWebsocket()
         this.websockerMessageManager()
     }
 
-    async createCall() {
+    async createCall(video: boolean = true, audio: boolean = true) {
+        await this.mediaService.createLocalStream(video, audio)
         await this.createPeer()
         await this.createOffer()
     }
@@ -53,6 +62,7 @@ export class SignalingService {
                 switch (data.type) {
                     case SignalType.OFFER:
                         const offer = new RTCSessionDescription(data.body)
+                        this.videoService.joinVideoCall()
                         this.onOffer(offer)
                         this.iceServer()
 
@@ -82,16 +92,14 @@ export class SignalingService {
 
     private async createPeer() {
         this.createPeerConnection()
-        await this.mediaService.createLocalStream()
         this.addLocalMediaTracks()
         this.addRemotMedia()
-        // this.iceServer()
     }
 
     private createPeerConnection() {
         this.peerConnection = new RTCPeerConnection(this.servers)
         this.peerConnection.onconnectionstatechange = (_) => {
-            console.log(this.peerConnection.connectionState)
+            // console.log(this.peerConnection.connectionState)
             // this.connectionStatus.next(this.peerConnection.connectionState)
             // this.changeDetectorRef.detectChanges()
         }
@@ -122,7 +130,6 @@ export class SignalingService {
 
     private iceServer() {
         this.peerConnection.onicecandidate = async (event) => {
-            console.log(event)
             if (!event.candidate) {
                 return
             }
@@ -164,6 +171,7 @@ export enum SignalType {
     ANSWER = 'ANSWER',
     ICE_CANDIDATE = 'ICE_CANDIDATE',
 }
+
 export interface SignalingMessage {
     type: SignalType
     body: any

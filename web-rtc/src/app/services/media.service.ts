@@ -1,13 +1,18 @@
-import {Injectable} from '@angular/core'
-import {BehaviorSubject, Observable, shareReplay, Subject} from 'rxjs'
+import { Injectable } from '@angular/core'
+
+import { BehaviorSubject, Observable, shareReplay } from 'rxjs'
 
 @Injectable({
     providedIn: 'root',
 })
 export class MediaService {
     localStream: MediaStream
-    localStreamSubject: Subject<MediaStream> = new Subject()
+
+    localStreamSubject: BehaviorSubject<MediaStream> =
+        new BehaviorSubject<MediaStream>(null)
+
     cameraOn: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false)
+
     cameraOnObservable: Observable<boolean> = this.cameraOn.pipe(shareReplay(1))
 
     remoteStreamsMap: Map<string, MediaStream> = new Map<string, MediaStream>()
@@ -15,37 +20,56 @@ export class MediaService {
     private audioOn: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(
         false
     )
+
     audioOnObservable: Observable<boolean> = this.audioOn.pipe(shareReplay(1))
 
-    constructor() {
-    }
+    constructor() {}
 
-    async createLocalStream() {
+    async createLocalStream(video: boolean = true, audio: boolean = true) {
         this.localStream = await navigator.mediaDevices.getUserMedia({
-            video: true,
-            audio: true,
+            video: video,
+            audio: audio,
         })
-        this.cameraOn.next(true)
-        this.audioOn.next(true)
+
+        this.cameraOn.next(video)
+        this.audioOn.next(audio)
 
         this.localStreamSubject.next(this.localStream)
     }
 
     addRemoteTrack(userIdn: string, track: MediaStreamTrack) {
         const remotStream = this.remoteStreamsMap.get(userIdn)
+
         if (remotStream) {
             remotStream.addTrack(track)
         }
     }
 
     addRemoteMediaStream(userIdn: string) {
-        this.remoteStreamsMap.set(userIdn, new MediaStream)
+        this.remoteStreamsMap.set(userIdn, new MediaStream())
     }
 
-    turnCameraOff() {
+    turnCamera() {
         const isCameraOn = this.cameraOn.value
-        this.localStream.getVideoTracks()[0].enabled = !isCameraOn
+
+        if (!isCameraOn) {
+            this.enableCamera()
+        } else {
+            ;(this.localStream.getVideoTracks() || []).forEach((track) => {
+                track.stop()
+                this.localStream.removeTrack(track)
+            })
+        }
+
         this.cameraOn.next(!isCameraOn)
+    }
+
+    private enableCamera() {
+        navigator.mediaDevices
+            .getUserMedia({ video: true })
+            .then((mediaDevices) =>
+                this.localStream.addTrack(mediaDevices.getTracks()[0])
+            )
     }
 
     turnAudio() {
@@ -55,6 +79,6 @@ export class MediaService {
     }
 
     closeStream() {
-        this.localStream.getTracks().forEach(track => track.stop())
+        this.localStream.getTracks().forEach((track) => track.stop())
     }
 }

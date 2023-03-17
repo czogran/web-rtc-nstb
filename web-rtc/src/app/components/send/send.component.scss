@@ -4,7 +4,9 @@
     @include control-button-base;
     @include set-background-image('./icons/send.svg');
 
-    :hover {
-        background-color: rgba(20, 40, 250, 0.6);
+    transform: rotate(45deg);
+
+    &:hover {
+        background-color: rgba(100, 150, 250);
     }
 }

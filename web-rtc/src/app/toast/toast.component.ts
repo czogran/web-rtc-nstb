@@ -43,10 +43,7 @@ export class ToastComponent implements OnInit, OnDestroy, AfterViewInit {
                             // const element = document.getElementById('video')!
                             // element.style.top = '15vw'
                             // element.style.left = '15vw'
-                            dragElement(
-                                document.getElementById('video') as HTMLElement,
-                                this.zone
-                            )
+
                         })
                     })
                 })
@@ -70,68 +67,5 @@ export class ToastComponent implements OnInit, OnDestroy, AfterViewInit {
         const element = document.getElementById('video')!
         element.style.width = isMinimized ? '20vw' : '75vw'
         element.style.height = isMinimized ? '20vh' : '75vh'
-    }
-}
-
-function dragElement(element: HTMLElement, zone: NgZone) {
-    const dragAndDropIcon = document.getElementById('dragAndDropIcon')!
-    dragAndDropIcon.onmousedown = dragMouseDown
-
-    const dragAndDropRelativeX =
-        dragAndDropIcon.offsetLeft -
-        element.offsetLeft +
-        dragAndDropIcon.offsetWidth * 0.5
-    const dragAndDropRelativeY =
-        dragAndDropIcon.offsetTop -
-        element.offsetTop +
-        dragAndDropIcon.offsetHeight * 0.5
-
-    let screenWidth: number, screenHeight: number
-
-    const observer = new ResizeObserver((events) =>
-        zone.run(() => {
-            screenWidth = document.documentElement.clientWidth
-            screenHeight = document.documentElement.clientHeight
-
-            element.style.left =
-                Math.min(
-                    element.offsetLeft,
-                    screenWidth - element.offsetWidth
-                ) + 'px'
-            element.style.top =
-                Math.min(
-                    element.offsetTop,
-                    screenHeight - element.offsetHeight
-                ) + 'px'
-        })
-    )
-
-    observer.observe(document.documentElement)
-
-    function dragMouseDown(event: any) {
-        event.preventDefault()
-
-        document.onmouseup = closeDragElement
-        document.onmousemove = elementDrag
-    }
-
-    function elementDrag(event: any) {
-        event.preventDefault()
-
-        element.style.left =
-            Math.min(
-                Math.max(0, event.clientX - dragAndDropRelativeX),
-                screenWidth - element.offsetWidth
-            ) + 'px'
-        element.style.top =
-            Math.min(
-                Math.max(0, event.clientY - dragAndDropRelativeY),
-                screenHeight - element.offsetHeight
-            ) + 'px'
-    }
-
-    function closeDragElement() {
-        document.onmouseup = null
-        document.onmousemove = null
     }
 }

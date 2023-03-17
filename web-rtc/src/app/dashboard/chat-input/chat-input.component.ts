@@ -35,7 +35,7 @@ export class ChatInputComponent implements OnInit {
     sendMessage() {
         this.chatService.sendChatMessage({
             authorIdn: this.userService.userIdn!,
-            recipentIdn: this.chatService.selectedChatSubject.value.chatIdn,
+            chatIdn: this.chatService.selectedChatSubject.value.chatIdn,
             body: this.messageInput.nativeElement.textContent,
         })
         this.messageInput.nativeElement.textContent = ''

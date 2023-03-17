@@ -7,6 +7,7 @@ import {
     ViewChild,
 } from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
+import { Subject } from 'rxjs'
 import { LoginService } from '../services/login.service'
 
 @Component({
@@ -22,6 +23,8 @@ export class LoginPageComponent {
     @ViewChild('input')
     input: ElementRef
 
+    wrongLogin: Subject<boolean> = new Subject<boolean>()
+
     constructor(
         private loginService: LoginService,
         private router: Router,
@@ -31,13 +34,14 @@ export class LoginPageComponent {
     submitInput() {
         const login = this.input.nativeElement.value
 
-        this.loginService.login(login).subscribe(() =>
-            this.router.navigate(
-                ['/dashboard'],
-                {
+        this.loginService.login(login).subscribe({
+            next: () =>
+                this.router.navigate(['/dashboard'], {
                     relativeTo: this.activatedRoute,
-                }
-            )
-        )
+                }),
+            error: () => {
+                this.wrongLogin.next(true)
+            },
+        })
     }
 }

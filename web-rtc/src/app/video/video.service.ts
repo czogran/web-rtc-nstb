@@ -1,16 +1,23 @@
-import { Injectable } from '@angular/core';
-import {Subject} from "rxjs";
+import { Injectable } from '@angular/core'
+import { Observable, Subject } from 'rxjs'
 
 @Injectable({
-  providedIn: 'root'
+    providedIn: 'root',
 })
 export class VideoService {
+    private videoState: Subject<any> = new Subject()
 
-  videoState: Subject<any> = new Subject()
+    videoStateObservable: Observable<any> = this.videoState.asObservable()
 
-  constructor() { }
+    startVideoCall() {
+        this.videoState.next('VIDEO')
+    }
 
-  startVideoCall (){
-    this.videoState.next('VIDEO')
-  }
+    startAudioCall() {
+        this.videoState.next('AUDIO')
+    }
+
+    joinVideoCall() {
+        this.videoState.next('JOIN_VIDEO_CALL')
+    }
 }

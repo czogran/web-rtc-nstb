@@ -22,12 +22,20 @@
     align-items: center;
 
     &__header {
-        text-align: center;
-        margin: 20px;
-        height: calc(50% - 50px);
+        display: flex;
+        align-items: center;
+        height: 50%;
     }
 
-    &__login{
-        text-align: end; width: 50%; min-width: 100px; height: 30px
+    &__login {
+        text-align: end;
+        width: 50%;
+        min-width: 100px;
+        height: 30px;
+
+        &--error {
+            box-shadow: rgb(255, 0, 0, 0.8) 0 0 20px;
+            border: 1px solid rgb(255, 0, 0, 0.5);
+        }
     }
 }

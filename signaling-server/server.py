@@ -1,16 +1,13 @@
-from typing import Optional, Awaitable
-
-import tornado.ioloop
-import tornado.web
-import tornado.websocket
-from tornado.httpserver import HTTPServer
-from tornado.web import Application, StaticFileHandler, RequestHandler
 import json
-from tornado.websocket import WebSocketHandler
-
-from data.services.user_service import register_user, get_user, get_user_idn
 
 import jwt
+import tornado.ioloop
+import tornado.websocket
+from tornado.web import Application, RequestHandler
+from tornado.websocket import WebSocketHandler
+
+from data.services.chats_service import get_user_chats, get_chat_users
+from data.services.user_service import register_user, get_user, get_user_idn
 
 connected_clients = set()
 
@@ -45,33 +42,39 @@ class WebRTCSignalingHandler(WebSocketHandler):
         connected_clients.remove(self)
 
 
-chat_clients = set()
+chat_clients = {}
 
 
 class ChatHandler(WebSocketHandler):
+    userIdn = ""
+
     def check_origin(self, origin):
         print('chat origin WebRTCChatHandler')
         return True
 
     def open(self):
         print("chat open")
-        chat_clients.add(self)
 
     def on_message(self, message):
         message = json.loads(message)
-        # print(message)
-        # print(chat_clients)
-        for client in chat_clients:
-            if client != self:
-                client.write_message(json.dumps(message))
+
+        if message.get('type', '') == 'CONNECT':
+            self.userIdn = message.get("userIdn", "")
+            chat_clients[self.userIdn] = ({"instance": self})
+            return
+
+        chatIdn = message.get("chatIdn")
+        if chatIdn is None:
+            return
+        userIdns = get_chat_users(chatIdn)
+
+        for userIdn in userIdns:
+            chat = chat_clients.get(userIdn, {}).get("instance")
+            if chat is not None:
+                chat.write_message(json.dumps(message))
 
     def on_close(self):
-        print("aaaaaaaaaaaaaaa")
-        # connected_clients.remove(self)
-
-
-user = {"aa": "ww", "bb": "cc"}
-loggedUsers = {}
+        del chat_clients[self.userIdn]
 
 
 class LoginHandler(RequestHandler):
@@ -98,15 +101,14 @@ class LoginHandler(RequestHandler):
 
         user_idn = get_user_idn(user_login)
         if user_idn is None:
-            self.set_status(401)  # Set status code to 401 (Unauthorized)
+            self.set_status(401)
             self.write("You are not registered.")
-            self.finish()  # End the request handler
+            self.finish()
             return
 
         encoded = jwt.encode({"idn": user_idn}, "secret", algorithm="HS256")
 
-        self.set_secure_cookie("user", encoded, expires_days=1, samesite="None", secure=True, httpOnly=True,
-                               domain="nstb.com")
+        self.set_secure_cookie("user", encoded, expires_days=1, samesite="None", secure=True, httpOnly=True)
 
         self.write(encoded)
         self.finish()
@@ -140,11 +142,6 @@ class LogoutHandler(RequestHandler):
 
     def post(self):
         self.clear_cookie("user")
-        request_body = self.request.body.decode('utf-8')
-        content = json.loads(request_body)
-        user_login = user.get(content.get("login"))
-        loggedUsers[self.get_secure_cookie('user')] = user_login
-
         self.finish()
 
     def on_close(self):
@@ -203,13 +200,15 @@ class UserDataHandler(RequestHandler):
         print('new connection 1234')
 
     def post(self):
-
-        token = self.request.headers.get("Token", "DAWID MISTRZ")
+        token = self.request.headers.get("Token")
+        if token is None:
+            self.set_status(401)  # Set status code to 401 (Unauthorized)
+            self.write("You are not authorized to access this resource.")
+            self.finish()  # End the request handler
 
         decoded_cookie = jwt.decode(token, "secret", algorithms=["HS256"])
         user_idn = decoded_cookie.get("idn", None)
-        print(decoded_cookie)
-        print(user_idn)
+
         if user_idn is None:
             self.set_status(401)  # Set status code to 401 (Unauthorized)
             self.write("You are not authorized to access this resource.")
@@ -228,9 +227,6 @@ class UserDataHandler(RequestHandler):
 
 
 class UserChatsHandler(RequestHandler):
-    userChats = [{'chatIdn': 'chat1', 'users': [{"userIdn": "ww", "name": "Paweł", "surname": "Raweł"}]},
-                 {'chatIdn': 'chat2', 'users': [{"userIdn": "cc", "name": "Dawid", "surname": "Gru"}]}]
-
     def set_default_headers(self):
         self.set_header('Access-Control-Allow-Origin', '*')
         self.set_header('Access-Control-Allow-Headers', '*')
@@ -247,8 +243,11 @@ class UserChatsHandler(RequestHandler):
     def post(self):
         request_body = self.request.body.decode('utf-8')
         content = json.loads(request_body)
-        self.write({"chats": self.userChats})
-        # self.write(str(self.userChats))
+
+        user_idn = content.get("userIdn", "")
+        chats = get_user_chats(user_idn)
+
+        self.write({"chats": chats})
 
     def on_close(self):
         print('connection closed')
@@ -271,8 +270,6 @@ application = Application([
 ], cookie_secret="__TODO:_GENERATE_YOUR_OWN_RANDOM_VALUE_HERE__")
 
 if __name__ == "__main__":
-    # http_server = HTTPServer(application)
-    # application.listen(8765, address='localhost')
     application.listen(8765)
     print("SERVER START")
     tornado.ioloop.IOLoop.current().start()

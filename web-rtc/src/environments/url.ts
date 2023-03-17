@@ -1,5 +1,5 @@
 // const basicUrl ='192.168.1.6'
-const basicUrl ='192.168.1.57'
+const basicUrl ='192.168.1.58'
 // const basicUrl ='localhost'
 const port =8765
 const http ='http'

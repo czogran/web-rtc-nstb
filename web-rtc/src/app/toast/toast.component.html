@@ -14,27 +14,5 @@
             /*background: aqua;*/
         "
     >
-        <div style="position: relative">
-            <div
-                style="
-                    display: flex;
-                    position: absolute;
-
-                    z-index: 1;
-                "
-            >
-                <app-drag-and-drop
-                    id="dragAndDropIcon"
-                    style="width: 20px; height: 20px"
-                ></app-drag-and-drop>
-                <app-screen-size
-                    style="width: 20px; height: 20px"
-                    (isMinimizedChange)="minimizeToast($event)"
-                ></app-screen-size>
-            </div>
-        </div>
-        <div style="height: 100%">
-            <ng-container *ngTemplateOutlet="template"></ng-container>
-        </div>
     </div>
 </ng-template>

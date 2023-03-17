@@ -1,20 +1,15 @@
 <div style="margin-left: 20px">
-    {{ ((chatService.selectedChatObservale | async )! ) | chatName }}
+    {{ (chatService.selectedChatObservale | async)! | chatName }}
 </div>
 <ng-template [ngIf]="chatService.selectedChatObservale | async">
     <app-camera
         class="icon-container icon-container--camera-icon"
         [active]="true"
-        (click)="startVideoCall()"
+        (click)="videoService.startVideoCall()"
     ></app-camera>
     <app-telephone
         class="icon-container icon-container--telephone-icon"
         [active]="true"
+        (click)="videoService.startAudioCall()"
     ></app-telephone>
-</ng-template>
-<ng-template #videoTemplate>
-    <!--    <div>-->
-    <app-video-tab></app-video-tab>
-
-    <!--    </div>-->
 </ng-template>
