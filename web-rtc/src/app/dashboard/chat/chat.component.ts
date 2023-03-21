@@ -1,12 +1,6 @@
 import { CommonModule, NgOptimizedImage } from '@angular/common'
-import {
-    ChangeDetectionStrategy,
-    Component,
-    OnInit,
-    ViewEncapsulation,
-} from '@angular/core'
-import { map, Observable } from 'rxjs'
-import { ChatMessage, ChatService } from '../../services/chat.service'
+import { ChangeDetectionStrategy, Component } from '@angular/core'
+import { ChatService } from '../../services/chat.service'
 import { MessageComponent } from './message/message.component'
 
 @Component({
@@ -16,12 +10,8 @@ import { MessageComponent } from './message/message.component'
     templateUrl: './chat.component.html',
     styleUrls: ['./chat.component.scss'],
     host: { class: 'chat' },
-    encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ChatComponent implements OnInit {
-
+export class ChatComponent {
     constructor(public chatService: ChatService) {}
-
-    ngOnInit(): void {}
 }

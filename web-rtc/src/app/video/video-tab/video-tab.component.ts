@@ -15,4 +15,7 @@ import { TelephoneComponent } from '../../components/telephone/telephone.compone
 export class VideoTabComponent {
     @Input()
     stream: MediaStream = new MediaStream()
+
+    @Input()
+    muted: boolean=false;
 }

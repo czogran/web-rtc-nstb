@@ -1,4 +1,4 @@
-<app-video #toast style="position: relative"></app-video>
+<app-video class="dashboard__video"></app-video>
 
 <app-users-menu class="dashboard__users__menu"></app-users-menu>
 
@@ -6,6 +6,10 @@
     <app-dashboard-header
         class="chat-wrapper__chat-header"
     ></app-dashboard-header>
+
     <app-chat class="chat-wrapper__chat"></app-chat>
-    <app-chat-input class="chat-wrapper__chat-input"> </app-chat-input>
+    <div class="chat-input-wrapper">
+        <app-chat-input class="chat-input-wrapper__chat-input">
+        </app-chat-input>
+    </div>
 </div>

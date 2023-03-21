@@ -23,16 +23,22 @@ export class MediaService {
 
     audioOnObservable: Observable<boolean> = this.audioOn.pipe(shareReplay(1))
 
-    constructor() {}
-
     async createLocalStream(video: boolean = true, audio: boolean = true) {
         this.localStream = await navigator.mediaDevices.getUserMedia({
-            video: video,
-            audio: audio,
+            video: true,
+            audio: true,
         })
 
         this.cameraOn.next(video)
         this.audioOn.next(audio)
+
+        if (!video) {
+            this.localStream.getVideoTracks()[0].enabled = false
+        }
+
+        if (!audio) {
+            this.localStream.getVideoTracks()[0].enabled = false
+        }
 
         this.localStreamSubject.next(this.localStream)
     }
@@ -52,24 +58,9 @@ export class MediaService {
     turnCamera() {
         const isCameraOn = this.cameraOn.value
 
-        if (!isCameraOn) {
-            this.enableCamera()
-        } else {
-            ;(this.localStream.getVideoTracks() || []).forEach((track) => {
-                track.stop()
-                this.localStream.removeTrack(track)
-            })
-        }
+        this.localStream.getVideoTracks()[0].enabled = !isCameraOn
 
         this.cameraOn.next(!isCameraOn)
-    }
-
-    private enableCamera() {
-        navigator.mediaDevices
-            .getUserMedia({ video: true })
-            .then((mediaDevices) =>
-                this.localStream.addTrack(mediaDevices.getTracks()[0])
-            )
     }
 
     turnAudio() {

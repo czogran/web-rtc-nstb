@@ -32,13 +32,13 @@
     }
 }
 
-@mixin hover-negative {
-    &:hover {
-        background-color: rgb(155, 50, 80);
-    }
-}
-@mixin hover-positive {
-    &:hover {
-        background-color: rgba(76, 175, 80, 0.3);
-    }
-}
+//@mixin hover-negative {
+//    &:hover {
+//        background-color: rgb(155, 50, 80);
+//    }
+//}
+//@mixin hover-positive {
+//    &:hover {
+//        background-color: rgba(76, 175, 80, 0.3);
+//    }
+//}

@@ -23,18 +23,15 @@ export class ChatService implements OnDestroy {
     public selectedChatObservale: Observable<ChatProfile> =
         this.selectedChatSubject.asObservable().pipe(shareReplay(1))
 
-    url: string = apiUrl.chat
     private ws: WebSocketSubject<any>
     private wsSubscription: Subscription
 
     messagesSubject: Subject<ChatMessage> = new Subject<ChatMessage>()
     messagesObservable: Observable<ChatMessage[]>
-    private messages: ChatMessage[] = []
 
-    availableChatProfilesSubject: Subject<ChatProfile[]> = new Subject()
-    availableChatProfilesObservable: Observable<ChatProfile[]> =
-        this.availableChatProfilesSubject.asObservable()
-    private selectedChatIdn: string
+    private messages: Map<string, ChatMessage[]> = new Map()
+
+    public selectedChatIdn: string
 
     constructor(
         private httpClient: HttpClient,
@@ -65,8 +62,15 @@ export class ChatService implements OnDestroy {
 
         this.messagesObservable = this.messagesSubject.asObservable().pipe(
             map((message) => {
-                this.messages.push(message)
-                return this.messages
+                if (!this.messages.has(this.selectedChatIdn)) {
+                    this.messages.set(this.selectedChatIdn, [])
+                }
+                if (message === null) {
+                    return this.messages.get(this.selectedChatIdn)
+                }
+                this.messages.get(this.selectedChatIdn).push(message)
+
+                return this.messages.get(this.selectedChatIdn)
             }),
             shareReplay(1)
         )
@@ -76,7 +80,7 @@ export class ChatService implements OnDestroy {
         this.ws.next(message)
     }
 
-    getUserChats() {
+    getUserChats(): Observable<ChatProfile[]> {
         return this.httpClient
             .post(apiUrl.userChats, { userIdn: this.userService.userIdn })
             .pipe(
@@ -85,13 +89,13 @@ export class ChatService implements OnDestroy {
                         (respnose as { chats: ChatProfile[] })?.chats ?? []
                 ),
                 tap((chats) => {
-                    this.availableChatProfilesSubject.next(chats)
-
                     const selectedChat =
                         chats.find(
                             (userChat) =>
                                 userChat.chatIdn === this.selectedChatIdn
-                        ) || chats[0]
+                        ) ||
+                        chats[0] ||
+                        {}
                     this.selectedChatSubject.next(selectedChat)
                     if (
                         this.selectedChatIdn === null ||
@@ -103,15 +107,13 @@ export class ChatService implements OnDestroy {
                     }
                 })
             )
-            .subscribe()
-    }
-
-    ngOnDestroy(): void {
-        this.wsSubscription.unsubscribe()
     }
 
     selectChat(chatProfile: ChatProfile) {
         this.selectedChatSubject.next(chatProfile)
+        this.selectedChatIdn = chatProfile.chatIdn
+
+        this.messagesSubject.next(null)
 
         this.setSelectedChatQueryParam(chatProfile.chatIdn || '')
     }
@@ -120,8 +122,21 @@ export class ChatService implements OnDestroy {
         this.router.navigate([], {
             relativeTo: this.activatedRoute,
             queryParams: { chatIdn: chatIdn },
-            queryParamsHandling: 'merge', // remove to replace all query params by provided
+            queryParamsHandling: 'merge',
         })
+    }
+
+    createChat(userIdns: string[]): Observable<ChatProfile> {
+        return this.httpClient
+            .post(apiUrl.createChat, { userIdns: userIdns })
+            .pipe(
+                map((response) => response as ChatProfile),
+                tap((chat) => this.selectedChatSubject.next(chat))
+            )
+    }
+
+    ngOnDestroy(): void {
+        this.wsSubscription.unsubscribe()
     }
 }
 

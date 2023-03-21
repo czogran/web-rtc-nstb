@@ -12,11 +12,16 @@
         </div>
         <app-video-tab
             class="panel-wrapper__local-video"
+            [muted]="true"
             [stream]="mediaService.localStreamSubject | async"
         ></app-video-tab>
         <app-video-tab
             class="panel-wrapper__remote-video"
-            [stream]="mediaService.remoteStreamsMap.get('aa')!"
+            [stream]="
+                mediaService.remoteStreamsMap.get(
+                    (chatService.selectedChatObservale | async).users[0].idn
+                )!
+            "
         ></app-video-tab>
         <div class="control-buttons-wrapper">
             <app-telephone

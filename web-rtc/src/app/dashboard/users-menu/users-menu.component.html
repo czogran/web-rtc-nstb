@@ -1,19 +1,39 @@
-<div style="border-bottom: 1px solid black">
-   <span> {{
-        userService.loggedUser!.nickname ||
-            userService!.loggedUser!.name + ' ' + userService!.loggedUser!.surname
-       }}</span>
-    <button (click)="logout()">LOGOUT</button>
+<div class="header-wrapper">
+    {{ userService.loggedUser | userName }}
+    <button (click)="logout()" class="header-wrapper__logout">LOGOUT</button>
 </div>
-<div
-    contenteditable="true"
-    class="message-input"
-    data-text="Search users"
-></div>
-<input />
+<div class="search-users">
+    <div
+        #searchUsers
+        contenteditable="true"
+        class="search-users__input"
+        data-text="Search users"
+        (keydown.enter)="onSearchUsers($event)"
+    ></div>
+    <div class="search-users__clear" (click)="clearSearchInput()">
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            fill="currentColor"
+            class="bi bi-x-lg"
+            viewBox="0 0 16 16"
+        >
+            <path
+                d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"
+            />
+        </svg>
+    </div>
+</div>
+<ul>
+    <li *ngFor="let user of usersObservable | async" (click)="selectUser(user)">
+        {{ user | userName }}
+    </li>
+</ul>
+
 <ul>
     <li
-        *ngFor="let chat of chatService.availableChatProfilesObservable | async"
+        *ngFor="let chat of availableChatProfilesObservable | async"
         (click)="selectPeer(chat)"
     >
         {{ chat | chatName }}

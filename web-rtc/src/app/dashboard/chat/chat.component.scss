@@ -1,5 +1,4 @@
-.chat {
-    //fill-opacity: 0.2;
+:host(.chat) {
     height: 100%;
     background-color: rgb(232, 232, 232);
     background-image: url('../../../assets/nstb.png');
@@ -9,11 +8,16 @@
     overflow-y: auto;
     border: 1px solid black;
     border-radius: 10px;
+}
 
-    .chat__messages-container {
-        overflow-y: auto;
+.messages-container {
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column-reverse;
+    height: inherit;
+
+    &__wrapper {
         display: flex;
-        flex-direction: column-reverse;
-        height: inherit;
+        flex-direction: column;
     }
 }

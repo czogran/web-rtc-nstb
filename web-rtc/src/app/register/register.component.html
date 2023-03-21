@@ -1,12 +1,6 @@
-<!--<div style="display: flex; flex-direction: column; width: 50%">-->
-<!--    <input placeholder="Name" />-->
-<!--    <input placeholder="Surname" />-->
-<!--    <input placeholder="Nickname" />-->
-<!--    <button (click)="registerUser()">SUBMIT</button>-->
-<!--</div>-->
 <form
     [formGroup]="userForm"
-    style="display: flex; flex-direction: column; width: 50%"
+    class="form-wrapper"
 >
     <input placeholder="Name" formControlName="name" />
     <input placeholder="Surname" formControlName="surname" />

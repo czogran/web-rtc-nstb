@@ -1,21 +1,16 @@
-import { CommonModule } from '@angular/common'
-import {
-    ChangeDetectorRef,
-    Component,
-    NgZone,
-    OnDestroy,
-    OnInit,
-} from '@angular/core'
-import { Subject, Subscription, tap } from 'rxjs'
-import { CameraComponent } from '../components/camera/camera.component'
-import { DragAndDropComponent } from '../components/drag-and-drop/drag-and-drop.component'
-import { MicrophoneComponent } from '../components/microphone/microphone.component'
-import { ScreenSizeComponent } from '../components/screen-size/screen-size.component'
-import { TelephoneComponent } from '../components/telephone/telephone.component'
-import { MediaService } from '../services/media.service'
-import { SignalingService } from '../services/signaling.service'
-import { VideoTabComponent } from './video-tab/video-tab.component'
-import { VideoService } from './video.service'
+import {CommonModule} from '@angular/common'
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, NgZone, OnDestroy, OnInit,} from '@angular/core'
+import {filter, Subject, takeUntil, tap} from 'rxjs'
+import {CameraComponent} from '../components/camera/camera.component'
+import {DragAndDropComponent} from '../components/drag-and-drop/drag-and-drop.component'
+import {MicrophoneComponent} from '../components/microphone/microphone.component'
+import {ScreenSizeComponent} from '../components/screen-size/screen-size.component'
+import {TelephoneComponent} from '../components/telephone/telephone.component'
+import {MediaService} from '../services/media.service'
+import {SignalingService, SignalType} from '../services/signaling.service'
+import {VideoTabComponent} from './video-tab/video-tab.component'
+import {VideoService} from './video.service'
+import {ChatService} from "../services/chat.service";
 
 @Component({
     selector: 'app-video',
@@ -31,28 +26,44 @@ import { VideoService } from './video.service'
         ScreenSizeComponent,
     ],
     standalone: true,
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class VideoComponent implements OnInit, OnDestroy {
     isVideoTabVisible: Subject<boolean> = new Subject()
 
-    videoStateSubscription: Subscription = new Subscription()
+    private unsubscribe: Subject<void> = new Subject()
 
     constructor(
         private changeDetectorRef: ChangeDetectorRef,
         public videoService: VideoService,
         private zone: NgZone,
-        private signalingService: SignalingService,
-        public mediaService: MediaService
+        public signalingService: SignalingService,
+        public mediaService: MediaService,
+        public chatService: ChatService
     ) {}
 
     ngOnInit() {
-        this.mediaService.localStreamSubject.subscribe((stream) => {
-            setTimeout(() => {
+        this.signalingService.callStatusObservable
+            .pipe(
+                takeUntil(this.unsubscribe),
+                filter((status) => status === SignalType.END)
+            )
+            .subscribe(() => {
+                this.isVideoTabVisible.next(false)
                 this.changeDetectorRef.detectChanges()
             })
-        })
-        this.videoStateSubscription = this.videoService.videoStateObservable
+
+        this.mediaService.localStreamSubject
+            .pipe(takeUntil(this.unsubscribe))
+            .subscribe((stream) => {
+                setTimeout(() => {
+                    this.changeDetectorRef.detectChanges()
+                })
+            })
+
+        this.videoService.videoStateObservable
             .pipe(
+                takeUntil(this.unsubscribe),
                 tap(() => {
                     this.zone.run(() => {
                         this.isVideoTabVisible.next(true)
@@ -71,7 +82,7 @@ export class VideoComponent implements OnInit, OnDestroy {
                     if (reason === 'VIDEO') {
                         this.signalingService.createCall().then()
                     } else if (reason === 'AUDIO') {
-                        this.signalingService.createCall( false).then()
+                        this.signalingService.createCall(false).then()
                     }
                 })
             )
@@ -91,7 +102,8 @@ export class VideoComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        this.videoStateSubscription.unsubscribe()
+        this.unsubscribe.next()
+        this.unsubscribe.complete()
     }
 }
 

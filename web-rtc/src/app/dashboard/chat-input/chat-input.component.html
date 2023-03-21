@@ -5,11 +5,11 @@
         class="message-input"
         data-text="Message"
         (keydown.enter)="onEnterDown($event)"
-        (keyup.enter)="sendMessage()"
+        (keyup.enter)="onAppSend()"
     ></div>
 
     <app-send
-        style="width: 40px; height: 40px; margin-left: 10px; margin-right: 20px"
-        (click)="sendMessage()"
+        class="send-icon"
+        (click)="onAppSend()"
     ></app-send>
 </ng-template>

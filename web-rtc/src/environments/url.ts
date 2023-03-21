@@ -1,6 +1,8 @@
 // const basicUrl ='192.168.1.6'
-const basicUrl ='192.168.1.58'
-// const basicUrl ='localhost'
+// const basicUrl ='192.168.1.58'
+// const basicUrl ='10.132.176.125'
+const basicUrl ='192.168.100.12'
+
 const port =8765
 const http ='http'
 const ws= 'ws'
@@ -13,6 +15,8 @@ export const apiUrl ={
     logout: httpUrl + '/logout',
     userData: httpUrl + '/user-data',
     userChats: httpUrl + '/user-chats',
+    searchUsers: httpUrl + '/search-users',
+    createChat: httpUrl + '/create-chat',
     chat: wsUrl + '/chat',
     signaling: wsUrl + '/signaling'
 }

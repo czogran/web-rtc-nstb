@@ -27,6 +27,5 @@ import { VideoComponent } from './video/video.component'
         },
     ],
     bootstrap: [AppComponent],
-    exports: [],
 })
 export class AppModule {}

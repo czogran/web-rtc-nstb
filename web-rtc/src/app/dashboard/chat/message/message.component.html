@@ -2,7 +2,8 @@
     class="message-wrapper"
     [ngClass]="{ 'own-message': message.authorIdn === userService.userIdn }"
 >
-    <div class="message-wrapper__message own-message__element">
-        {{ message.body }}
-    </div>
+    <div
+        class="message-wrapper__message own-message__element"
+        [innerHTML]="message.body"
+    ></div>
 </div>

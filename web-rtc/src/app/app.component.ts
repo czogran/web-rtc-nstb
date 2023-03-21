@@ -14,10 +14,4 @@ import { ToastComponent } from './toast/toast.component'
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppComponent {
-    @ViewChild('test')
-    test: TemplateRef<any>
-
-
-
-    constructor() {}
 }

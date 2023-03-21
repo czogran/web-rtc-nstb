@@ -12,6 +12,10 @@ app-dashboard {
             margin: 10px;
             width: 15%;
         }
+
+        .dashboard__video {
+            position: relative
+        }
     }
 
     .chat-wrapper {
@@ -28,8 +32,7 @@ app-dashboard {
             margin: 2px 2px 0 2px;
         }
 
-        &__chat-header,
-        &__chat-input {
+        &__chat-header {
             min-height: 50px;
             max-height: 200px;
             height: 10%;
@@ -37,14 +40,19 @@ app-dashboard {
         }
 
         &__chat {
-            flex-grow: 1;
+            flex-grow: 2;
             margin: 1px 2px 0 2px;
             overflow: hidden;
-            //width: auto;
         }
+    }
 
+    .chat-input-wrapper {
         &__chat-input {
+            min-height: 50px;
+            max-height: 200px;
+            height: 10%;
             margin: 1px 2px 2px 2px;
+            width: auto;
         }
     }
 }

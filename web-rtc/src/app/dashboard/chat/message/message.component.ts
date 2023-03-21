@@ -1,8 +1,7 @@
 import { CommonModule } from '@angular/common'
-import { Component, Input, OnInit } from '@angular/core'
-import {ChatMessage} from "../../../services/chat.service";
-import {LoginService} from "../../../services/login.service";
-import {UserService} from "../../../services/user.service";
+import { Component, Input } from '@angular/core'
+import { ChatMessage } from '../../../services/chat.service'
+import { UserService } from '../../../services/user.service'
 
 @Component({
     selector: 'app-message',
@@ -11,10 +10,9 @@ import {UserService} from "../../../services/user.service";
     templateUrl: './message.component.html',
     styleUrls: ['./message.component.scss'],
 })
-export class MessageComponent implements OnInit {
+export class MessageComponent {
     @Input()
     message: ChatMessage
-    constructor(public userService: UserService) {}
 
-    ngOnInit(): void {}
+    constructor(public userService: UserService) {}
 }

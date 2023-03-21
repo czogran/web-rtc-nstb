@@ -2,16 +2,14 @@ import { CommonModule } from '@angular/common'
 import {
     ChangeDetectionStrategy,
     Component,
-    OnInit,
     ViewEncapsulation,
 } from '@angular/core'
-import { ActivatedRoute } from '@angular/router'
+import { SignalingService } from '../services/signaling.service'
+import { VideoComponent } from '../video/video.component'
 import { ChatInputComponent } from './chat-input/chat-input.component'
 import { ChatComponent } from './chat/chat.component'
 import { DashboardHeaderComponent } from './dashboard-header/dashboard-header.component'
 import { UsersMenuComponent } from './users-menu/users-menu.component'
-import {SignalingService} from "../services/signaling.service";
-import {VideoComponent} from "../video/video.component";
 
 @Component({
     selector: 'app-dashboard',
@@ -31,11 +29,4 @@ import {VideoComponent} from "../video/video.component";
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DashboardComponent implements OnInit {
-    constructor(private activatedRoute: ActivatedRoute) {}
-
-    ngOnInit(): void {
-        console.log('DashboardComponent')
-        console.log(this.activatedRoute.snapshot.paramMap)
-    }
-}
+export class DashboardComponent {}

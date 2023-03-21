@@ -1,5 +1,5 @@
-<div class="chat__messages-container">
-    <div style="display: flex; flex-direction: column">
+<div class="messages-container">
+    <div class="messages-container__wrapper">
         <div *ngFor="let message of chatService.messagesObservable | async">
             <app-message [message]="message"></app-message>
         </div>
