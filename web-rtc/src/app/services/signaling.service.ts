@@ -35,7 +35,8 @@ export class SignalingService {
     private callStatus: Subject<SignalType> = new Subject<SignalType>()
 
     callStatusObservable = this.callStatus.asObservable()
-    private iceMessages: any[] = []
+  private iceMessages: any[] = []
+  private ready: boolean = false;
 
     constructor(
         private zone: NgZone,
@@ -75,18 +76,22 @@ export class SignalingService {
                 switch (data.type) {
                     case SignalType.OFFER:
                         this.videoService.joinVideoCall()
-                        this.onOffer(data).then()
-                        if (this.iceMessages.length) {
-                            this.iceMessages.forEach((iceMessage) => {
-                                const iceCandidate = new RTCIceCandidate(
-                                    iceMessage
-                                )
-                                this.peerConnection.addIceCandidate(
-                                    iceCandidate
-                                )
-                            })
-                        }
-                        this.iceServer()
+                    this.onOffer(data).then(() => {
+                      console.log(this.ready, this.iceMessages)
+                      if (this.ready && this.iceMessages.length) {
+
+                        this.iceMessages.forEach((iceMessage) => {
+                          const iceCandidate = new RTCIceCandidate(
+                            iceMessage
+                          )
+                          this.peerConnection.addIceCandidate(
+                            iceCandidate
+                          )
+                        })
+                      }
+                    })
+                    this.iceServer()
+                   
 
                         break
                     case SignalType.ANSWER:
@@ -99,9 +104,10 @@ export class SignalingService {
                         console.log('ANSWER')
 
                         break
-                    case SignalType.ICE_CANDIDATE:
-                        if (isNullOrUndefined(this.peerConnection)) {
-                            this.iceMessages.push(data.body)
+                  case SignalType.ICE_CANDIDATE:
+                    if (!this.ready) {
+                      this.iceMessages.push(data.body)
+                      console.log('STASHING ICE');
                             return
                         }
                         const iceCandidate = new RTCIceCandidate(data.body)
@@ -190,7 +196,8 @@ export class SignalingService {
         const offer = new RTCSessionDescription(data.body)
 
         await this.createPeer(data.video)
-        await this.peerConnection.setRemoteDescription(offer)
+      await this.peerConnection.setRemoteDescription(offer)
+      this.ready = true;
 
         this.answer = await this.peerConnection.createAnswer()
         await this.peerConnection.setLocalDescription(this.answer)
@@ -199,7 +206,7 @@ export class SignalingService {
 
     endConnection() {
         this.peerConnection.close()
-        this.sendSignalingMessage(SignalType.END, {})
+      this.sendSignalingMessage(SignalType.END, {})
     }
 }
 
