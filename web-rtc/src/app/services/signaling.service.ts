@@ -2,7 +2,6 @@ import { Injectable, NgZone } from '@angular/core'
 import { map, Observable, Subject } from 'rxjs'
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket'
 import { apiUrl } from '../../environments/url'
-import { isNullOrUndefined } from '../utils/utils'
 import { VideoService } from '../video/video.service'
 import { ChatService } from './chat.service'
 import { MediaService } from './media.service'
@@ -35,8 +34,8 @@ export class SignalingService {
     private callStatus: Subject<SignalType> = new Subject<SignalType>()
 
     callStatusObservable = this.callStatus.asObservable()
-  private iceMessages: any[] = []
-  private ready: boolean = false;
+    private iceMessages: any[] = []
+    private isPeerReady: boolean = false
 
     constructor(
         private zone: NgZone,
@@ -76,22 +75,10 @@ export class SignalingService {
                 switch (data.type) {
                     case SignalType.OFFER:
                         this.videoService.joinVideoCall()
-                    this.onOffer(data).then(() => {
-                      console.log(this.ready, this.iceMessages)
-                      if (this.ready && this.iceMessages.length) {
-
-                        this.iceMessages.forEach((iceMessage) => {
-                          const iceCandidate = new RTCIceCandidate(
-                            iceMessage
-                          )
-                          this.peerConnection.addIceCandidate(
-                            iceCandidate
-                          )
-                        })
-                      }
-                    })
-                    this.iceServer()
-                   
+                        this.onOffer(data).then(() =>
+                            this.consumeStashedIceMessages()
+                        )
+                        this.iceServer()
 
                         break
                     case SignalType.ANSWER:
@@ -100,14 +87,14 @@ export class SignalingService {
                         )
                         this.peerConnection
                             .setRemoteDescription(sessionDescrition)
-                            .then()
-                        console.log('ANSWER')
-
+                            .then(() => {
+                                this.isPeerReady = true
+                                this.consumeStashedIceMessages()
+                            })
                         break
-                  case SignalType.ICE_CANDIDATE:
-                    if (!this.ready) {
-                      this.iceMessages.push(data.body)
-                      console.log('STASHING ICE');
+                    case SignalType.ICE_CANDIDATE:
+                        if (!this.isPeerReady) {
+                            this.iceMessages.push(data.body)
                             return
                         }
                         const iceCandidate = new RTCIceCandidate(data.body)
@@ -117,11 +104,22 @@ export class SignalingService {
                         this.peerConnection.close()
                         this.mediaService.closeStream()
                         this.callStatus.next(SignalType.END)
-                        this.ws.complete()
+                        this.isPeerReady = false
                         break
                 }
             })
         })
+    }
+
+    private consumeStashedIceMessages() {
+        if (this.iceMessages.length) {
+            this.iceMessages.forEach((iceMessage) => {
+                const iceCandidate = new RTCIceCandidate(iceMessage)
+                this.peerConnection.addIceCandidate(iceCandidate).then()
+            })
+
+            this.iceMessages = []
+        }
     }
 
     private sendSignalingMessage(
@@ -135,9 +133,7 @@ export class SignalingService {
             body: body,
             video: video,
             chatIdn: this.chatService.selectedChatIdn,
-            recipentIdn: this.chatService.selectedChatSubject.value.users.find(
-                (user) => user.idn !== this.userService.userIdn
-            ).idn,
+            recipentIdn: this.chatService.uIdn(),
         }
         this.ws.next(message)
     }
@@ -165,7 +161,7 @@ export class SignalingService {
     }
 
     private addRemotMedia() {
-        const userIdn = this.chatService.selectedChatSubject.value.users[0].idn
+        const userIdn = this.chatService.uIdn()
         this.mediaService.addRemoteMediaStream(userIdn)
 
         this.peerConnection.ontrack = (event) => {
@@ -177,7 +173,6 @@ export class SignalingService {
 
     private iceServer() {
         this.peerConnection.onicecandidate = async (event) => {
-            console.log(event)
             if (!event.candidate) {
                 return
             }
@@ -195,9 +190,17 @@ export class SignalingService {
     private async onOffer(data: SignalingMessage) {
         const offer = new RTCSessionDescription(data.body)
 
-        await this.createPeer(data.video)
-      await this.peerConnection.setRemoteDescription(offer)
-      this.ready = true;
+        // await this.createPeer(data.video)
+
+        this.createPeerConnection()
+        this.addRemotMedia()
+
+        await this.peerConnection.setRemoteDescription(offer)
+
+        this.isPeerReady = true
+
+        await this.mediaService.createLocalStream(data.video)
+        this.addLocalMediaTracks()
 
         this.answer = await this.peerConnection.createAnswer()
         await this.peerConnection.setLocalDescription(this.answer)
@@ -205,8 +208,9 @@ export class SignalingService {
     }
 
     endConnection() {
+        this.isPeerReady = false
         this.peerConnection.close()
-      this.sendSignalingMessage(SignalType.END, {})
+        this.sendSignalingMessage(SignalType.END, {})
     }
 }
 

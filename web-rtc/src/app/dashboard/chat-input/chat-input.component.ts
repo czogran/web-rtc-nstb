@@ -16,12 +16,17 @@ export class ChatInputComponent {
     @ViewChild('messageInput')
     messageInput: ElementRef
 
+    blockSendingMessages: boolean = false
+
     constructor(
         public chatService: ChatService,
         private userService: UserService
     ) {}
 
     sendMessage() {
+        if (this.blockSendingMessages) {
+            return
+        }
         this.chatService.sendChatMessage({
             authorIdn: this.userService.userIdn!,
             chatIdn: this.chatService.selectedChatIdn,
@@ -43,11 +48,15 @@ export class ChatInputComponent {
 
         const chat = this.chatService.selectedChatSubject.value
         if (!chat.chatIdn) {
+            this.blockSendingMessages = true
             this.chatService
                 .createChat(chat.users.map((user) => user.idn))
-                .subscribe(() => this.sendMessage())
-        } else {
-            this.sendMessage()
+                .subscribe(() => {
+                    this.blockSendingMessages = false
+                    this.sendMessage()
+                })
+            return
         }
+        this.sendMessage()
     }
 }

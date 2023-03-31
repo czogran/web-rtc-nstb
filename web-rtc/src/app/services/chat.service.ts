@@ -12,6 +12,7 @@ import {
 } from 'rxjs'
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket'
 import { apiUrl } from '../../environments/url'
+import { isEmpty } from '../utils/utils'
 import { User, UserService } from './user.service'
 
 @Injectable({
@@ -54,12 +55,30 @@ export class ChatService implements OnDestroy {
         this.wsSubscription = this.ws
             .pipe(
                 tap((response) => {
-                    const message = JSON.parse(response.data)
+                    const message = JSON.parse(response.data) as ChatMessage
+                    //  fix na zakładanie nowych czatów
+                    if (isEmpty(this.selectedChatIdn)) {
+                        this.getUserChats().subscribe(() => {
+                            this.setSelectedChatQueryParam(message.chatIdn)
+                            this.messagesSubject.next(message)
+                        })
+                        return
+                    }
                     this.messagesSubject.next(message)
                 })
             )
             .subscribe()
 
+        this.createMessageObservable()
+    }
+
+    public uIdn() {
+        // ponieważ chat jest na dwie osoby, do poprawy, tez by nie bylo w html
+        return this.selectedChatSubject.value.users.find(
+            (user) => user.idn !== this.userService.userIdn
+        ).idn
+    }
+    private createMessageObservable() {
         this.messagesObservable = this.messagesSubject.asObservable().pipe(
             map((message) => {
                 if (!this.messages.has(this.selectedChatIdn)) {
@@ -110,11 +129,13 @@ export class ChatService implements OnDestroy {
     }
 
     selectChat(chatProfile: ChatProfile) {
+        this.setChatData(chatProfile)
+        this.messagesSubject.next(null)
+    }
+
+    private setChatData(chatProfile: ChatProfile) {
         this.selectedChatSubject.next(chatProfile)
         this.selectedChatIdn = chatProfile.chatIdn
-
-        this.messagesSubject.next(null)
-
         this.setSelectedChatQueryParam(chatProfile.chatIdn || '')
     }
 
@@ -131,7 +152,7 @@ export class ChatService implements OnDestroy {
             .post(apiUrl.createChat, { userIdns: userIdns })
             .pipe(
                 map((response) => response as ChatProfile),
-                tap((chat) => this.selectedChatSubject.next(chat))
+                tap((chatProfile) => this.setChatData(chatProfile))
             )
     }
 

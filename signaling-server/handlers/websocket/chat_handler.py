@@ -19,12 +19,12 @@ class ChatHandler(BaseHandler, WebSocketHandler):
             chat_clients[self.userIdn] = ({"instance": self})
             return
 
-        chatIdn = message.get("chatIdn")
-        if chatIdn is None:
+        chat_idn = message.get("chatIdn")
+        if chat_idn is None:
             return
-        userIdns = get_chat_users(chatIdn)
+        user_idns = get_chat_users(chat_idn)
 
-        for userIdn in userIdns:
+        for userIdn in user_idns:
             chat = chat_clients.get(userIdn, {}).get("instance")
             if chat is not None:
                 chat.write_message(json.dumps(message))

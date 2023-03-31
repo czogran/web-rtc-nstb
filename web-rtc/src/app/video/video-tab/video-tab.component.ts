@@ -17,5 +17,5 @@ export class VideoTabComponent {
     stream: MediaStream = new MediaStream()
 
     @Input()
-    muted: boolean=false;
+    muted: boolean = false
 }

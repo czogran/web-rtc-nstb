@@ -18,9 +18,7 @@
         <app-video-tab
             class="panel-wrapper__remote-video"
             [stream]="
-                mediaService.remoteStreamsMap.get(
-                    (chatService.selectedChatObservale | async).users[0].idn
-                )!
+                mediaService.remoteStreamsMap.get(chatService.uIdn())
             "
         ></app-video-tab>
         <div class="control-buttons-wrapper">

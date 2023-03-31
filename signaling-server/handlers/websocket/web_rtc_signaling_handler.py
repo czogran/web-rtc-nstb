@@ -11,7 +11,6 @@ class WebRTCSignalingHandler(BaseHandler, WebSocketHandler):
     user_idn = ""
 
     def on_message(self, message):
-        print(message)
         message = json.loads(message)
         message_type = message["type"]
 

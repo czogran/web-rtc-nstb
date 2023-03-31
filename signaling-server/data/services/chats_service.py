@@ -49,6 +49,6 @@ def add_chat(users_idns):
     with open(CHATS_FILE_PATH, 'w') as file:
         json.dump(data, file)
         file.close()
-
+    new_chat["chatIdn"] = idn
     add_user_chats(users_idns, idn)
     return new_chat
