@@ -7,9 +7,14 @@ Aplikacja serweru signal dla NSTB: WebRTC. Odpowiada za zestawianie połączeń 
 1. Python3, minimalna wersja 3.11
 2. Instalacja modułów pyjwt oraz tornado
 
+### Uruchamianie
+Serwer uruchamia się za pomocą polecenia:
+
+    python3 server.py
+    
 ## Web-RTC
 Klient dla POCa projektu NSTB: WebRTC.
-Klient jest napisany w Angularze, do instalacji wymaga nodejs w wersji 16 lub ższej oraz npm w wersji 6 lub wyższej.
+Klient jest napisany w Angularze, do instalacji wymaga nodejs w wersji 16 lub wyższej oraz npm w wersji 6 lub wyższej.
 ### Przygotowanie
 Instalacja niezbędnych pakietów
     npm install
@@ -17,7 +22,19 @@ Instalacja niezbędnych pakietów
 W pliku
     /environments/url.ts_ należy ustawić adres serwera signal do którego ma
 się łączyć aplikacja.
-    const _baseUrl = localhost:8765_
+    
+    const baseUrl = localhost:8765
+    
+Ustawienie adresu dla serwera STUN w pliku _signaling.service.ts_
+
+    iceServers: [
+            {
+                urls: [
+                    'stun:stun.l.google.com:19302'
+                ],
+            },
+        ],
+    
 ### Uruchomienie aplikacji
 Domyślne uruchomienie aplikacji
 
