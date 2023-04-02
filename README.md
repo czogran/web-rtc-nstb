@@ -12,24 +12,24 @@ Klient dla POCa projektu NSTB: WebRTC.
 Klient jest napisany w Angularze, do instalacji wymaga nodejs w wersji 16 lub ższej oraz npm w wersji 6 lub wyższej.
 ### Przygotowanie
 Instalacja niezbędnych pakietów
-npm install
+    npm install
 ### Konfiguracja
 W pliku
-/environments/url.ts_ należy ustawić adres serwera signal do którego ma
+    /environments/url.ts_ należy ustawić adres serwera signal do którego ma
 się łączyć aplikacja.
-const _baseUrl = localhost:8765
+    const _baseUrl = localhost:8765_
 ### Uruchomienie aplikacji
 Domyślne uruchomienie aplikacji
 
-npm ng run serve
+    npm ng run serve
 ### Korszytanie z aplikacji
 #### 1.Dodawanie użytkowników
 Aby móc korzystać z aplikacji, należy wpierw dodać dodać użytkowników. Można to zrobić w POC poprzez wejście na adres
-http://localhosy: 4200/register
+    http://localhost: 4200/register
 Użytkownicy dla uproszenia POCa są przetrzymywani w pliku JSON.
 #### 2. Logowanie
-Po pozyskaniu użytkoników, należy "zalogować" się do aplikacji. Na potrzeby POCa nie ma potrzeby na wpisywanie hasła wystarczy login podany przy tworzeniu uży tkownika.
-http://localhost:4200/login
+Po pozyskaniu użytkoników, należy "zalogować" się do aplikacji. Na potrzeby POCa nie ma potrzeby na wpisywanie hasła wystarczy login podany przy tworzeniu uży tkownika. 
+    http://localhost:4200/login
 
 
 #### 3. Korzystanie z aplikacji
