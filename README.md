@@ -38,3 +38,4 @@ W lewym górnym aplikcaji POC znajduje się okienko do wyszukiwania innych użyt
 2. Z listy dostępnych użykoników, wybieramy tego który nas interesuje.
 3. Możemy rozpocząć komunikację poprzez chat lub rozmowę wideo:)
 #### !!!WAŻNE !!!
+Podczas testów należy udostępnić przeglądarce dostęp do kamery i mikrofonu. W przypadku deployu aplikacji na zewnętrznej maszynie połączenie musi być po protokole HTTPS.
